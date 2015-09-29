@@ -112,6 +112,7 @@ class MendeleyAuthorizationCodeTokenRefresher():
                 rsp._content = bytes(json.dumps({'error': 'invalid_client', 'error_description': rsp.text}), rsp.encoding)
                 rsp.headers['content-type'] = 'application/json'
             session.token = rsp.text
+            return rsp
 
         oauth.compliance_hook['refresh_token_response'] = [handle_refresh_request]
         session.token = oauth.refresh_token(self.token_url, auth=self.auth)
