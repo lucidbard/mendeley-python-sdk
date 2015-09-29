@@ -93,7 +93,6 @@ class MendeleySession(OAuth2Session):
         except TokenExpiredError:
             if self.refresher:
                 self.refresher.refresh(self)
-                print("Refresh data:" + data, full_url, headers, kwargs, method)
                 rsp = self.__do_request(data, full_url, headers, kwargs, method)
             else:
                 raise
