@@ -107,5 +107,12 @@ class MendeleyAuthorizationCodeTokenRefresher():
 
     def refresh(self, session):
         oauth = OAuth2Session(client=self.client, auto_refresh_url="https://api.mendeley.com/oauth/token", redirect_uri=self.redirect_uri, scope=['all'], token=session.token)
+        def handle_refresh_request(rsp):
+            logger.debug("HANDLE_RESPONSE")
+            if rsp.headers['content-type'] == 'text/plain':
+                rsp._content = bytes(json.dumps({'error': 'invalid_client', 'error_description': rsp.text}), rsp.encoding)
+                rsp.headers['content-type'] = 'application/json'
+            self.token = rsp._content
+
         oauth.compliance_hook['refresh_token_response'] = [handle_text_response]
         session.token = oauth.refresh_token(self.token_url, auth=self.auth)
