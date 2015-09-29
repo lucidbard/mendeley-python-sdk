@@ -4,7 +4,7 @@ from oauthlib.oauth2 import MobileApplicationClient, BackendApplicationClient, W
 from requests.auth import HTTPBasicAuth
 from requests_oauthlib import OAuth2Session
 from future.builtins import bytes
-
+import logging
 from mendeley.session import MendeleySession
 
 logger = logging.getLogger(__name__)
