@@ -14,7 +14,6 @@ def handle_text_response(rsp):
     if rsp.headers['content-type'] == 'text/plain':
         rsp._content = bytes(json.dumps({'error': 'invalid_client', 'error_description': rsp.text}), rsp.encoding)
         rsp.headers['content-type'] = 'application/json'
-    self.token = rsp._content
     return rsp
 
 
