@@ -53,7 +53,7 @@ class MendeleySession(OAuth2Session):
 
         self.host = mendeley.host
         self.refresher = refresher
-
+        self.auto_refresh_url = "https://api.mendeley.com/oauth/token"
         self.annotations = Annotations(self)
         self.catalog = Catalog(self)
         self.documents = Documents(self, None)
