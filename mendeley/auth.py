@@ -10,7 +10,7 @@ from mendeley.session import MendeleySession
 logger = logging.getLogger(__name__)
 
 def handle_text_response(rsp):
-    logger.debug("HANDLE_TEXT_RESPONSE", rsp)
+    logger.debug("HANDLE_TEXT_RESPONSE")
     if rsp.headers['content-type'] == 'text/plain':
         rsp._content = bytes(json.dumps({'error': 'invalid_client', 'error_description': rsp.text}), rsp.encoding)
         rsp.headers['content-type'] = 'application/json'
