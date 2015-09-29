@@ -92,7 +92,7 @@ class MendeleyClientCredentialsTokenRefresher():
         self.auth = authenticator.auth
 
     def refresh(self, session):
-        oauth = OAuth2Session(client=self.client, redirect_uri=self.redirect_uri, scope=['all'], token=session.token)
+        oauth = OAuth2Session(client=self.client, redirect_uri=self.redirect_uri, auto_refresh_url="https://api.mendeley.com/oauth/token", scope=['all'], token=session.token)
         oauth.compliance_hook['access_token_response'] = [handle_text_response]
 
         session.token = oauth.fetch_token(self.token_url, auth=self.auth, scope=['all'])
@@ -106,7 +106,7 @@ class MendeleyAuthorizationCodeTokenRefresher():
         self.redirect_uri = authenticator.mendeley.redirect_uri
 
     def refresh(self, session):
-        oauth = OAuth2Session(client=self.client, redirect_uri=self.redirect_uri, scope=['all'], token=session.token)
+        oauth = OAuth2Session(client=self.client, auto_refresh_url="https://api.mendeley.com/oauth/token", redirect_uri=self.redirect_uri, scope=['all'], token=session.token)
         oauth.compliance_hook['refresh_token_response'] = [handle_text_response]
 
         session.token = oauth.refresh_token(self.token_url, auth=self.auth)
