@@ -2,12 +2,15 @@ import platform
 
 from future.moves.urllib.parse import urljoin
 from oauthlib.oauth2 import TokenExpiredError
+from requests_oauthlib import TokenUpdated
 from requests_oauthlib import OAuth2Session
 
 from mendeley.exception import MendeleyApiException
 from mendeley.resources import *
 from mendeley.version import __version__
+import logging
 
+logger = logging.getLogger(__name__)
 
 class MendeleySession(OAuth2Session):
     """
@@ -45,15 +48,22 @@ class MendeleySession(OAuth2Session):
        user's library.
     """
 
-    def __init__(self, mendeley, token, client=None, refresher=None):
+    def __init__(self, mendeley, token, client=None, refresher=None,
+                 updater=None):
         if client:
-            super(MendeleySession, self).__init__(client=client, token=token)
+            super(MendeleySession, self).__init__(client=client, token=token,
+                                                  token_updater=updater)
+            print("Updating client")
         else:
-            super(MendeleySession, self).__init__(client_id=mendeley.client_id, token=token)
-
+            super(MendeleySession,
+                  self).__init__(client_id=mendeley.client_id, token=token,
+                                 token_updater=updater)
+            print("Updating non-client")
+            
         self.host = mendeley.host
         self.refresher = refresher
         self.auto_refresh_url = "https://api.mendeley.com/oauth/token"
+        self.token_updater = updater
         self.annotations = Annotations(self)
         self.catalog = Catalog(self)
         self.documents = Documents(self, None)
@@ -92,9 +102,9 @@ class MendeleySession(OAuth2Session):
             rsp = self.__do_request(data, full_url, headers, kwargs, method)
         except TokenExpiredError:
             if self.refresher:
-                
                 self.refresher.refresh(self)
-                rsp = self.__do_request(data, full_url, headers, kwargs, method)
+                rsp = self.__do_request(data, full_url, headers,
+                                        kwargs, method)
             else:
                 raise
 
@@ -104,7 +114,9 @@ class MendeleySession(OAuth2Session):
             raise MendeleyApiException(rsp)
 
     def __do_request(self, data, full_url, headers, kwargs, method):
-        rsp = super(MendeleySession, self).request(method, full_url, data, headers, **kwargs)
+        logger.debug("Test!")
+        rsp = super(MendeleySession, self).request(method, full_url,
+                                                   data, headers, **kwargs)
         return rsp
 
     @staticmethod

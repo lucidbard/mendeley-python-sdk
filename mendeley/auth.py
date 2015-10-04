@@ -33,7 +33,9 @@ class MendeleyClientCredentialsAuthenticator(object):
         return MendeleySession(self.mendeley,
                                token,
                                client=self.client,
-                               refresher=MendeleyClientCredentialsTokenRefresher(self))
+                               refresher=MendeleyClientCredentialsTokenRefresher(self),
+                               
+        )
 
 
 class MendeleyLoginAuthenticator:
@@ -105,7 +107,13 @@ class MendeleyAuthorizationCodeTokenRefresher():
         self.redirect_uri = authenticator.mendeley.redirect_uri
 
     def refresh(self, session):
-        oauth = OAuth2Session(client=self.client, auto_refresh_url="https://api.mendeley.com/oauth/token", redirect_uri=self.redirect_uri, scope=['all'], token=session.token)
+        oauth = OAuth2Session(client=self.client,
+                              auto_refresh_url="https://api.mendeley.com/oauth/token",
+                              redirect_uri=self.redirect_uri,token_updater=handle_update_token,
+                              scope=['all'], token=session.token)
+        def handle_update_token(tkn):
+            print(tkn)
+        
         def handle_refresh_request(rsp):
             logger.debug("HANDLE_RESPONSE")
             if rsp.headers['content-type'] == 'text/plain':
