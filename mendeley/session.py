@@ -10,7 +10,6 @@ from mendeley.resources import *
 from mendeley.version import __version__
 import logging
 
-logger = logging.getLogger(__name__)
 
 class MendeleySession(OAuth2Session):
     """
@@ -37,6 +36,10 @@ class MendeleySession(OAuth2Session):
     .. attribute:: groups
 
        A :class:`Groups <mendeley.resources.groups.Groups>` resource for accessing groups that the user is a member of.
+
+    .. attribute:: folders
+
+       A :class:`Folders <mendeley.resources.folders.Folders>` resource for accessing profiles of Mendeley users.
 
     .. attribute:: profiles
 
@@ -67,6 +70,7 @@ class MendeleySession(OAuth2Session):
         self.annotations = Annotations(self)
         self.catalog = Catalog(self)
         self.documents = Documents(self, None)
+#        self.folders = Folders(self)
         self.files = Files(self)
         self.groups = Groups(self)
         self.profiles = Profiles(self)
@@ -92,12 +96,10 @@ class MendeleySession(OAuth2Session):
 
     def request(self, method, url, data=None, headers=None, **kwargs):
         full_url = urljoin(self.host, url)
-
         if not headers:
             headers = {}
 
         headers['user-agent'] = self.__user_agent()
-
         try:
             rsp = self.__do_request(data, full_url, headers, kwargs, method)
         except TokenExpiredError:
@@ -114,7 +116,6 @@ class MendeleySession(OAuth2Session):
             raise MendeleyApiException(rsp)
 
     def __do_request(self, data, full_url, headers, kwargs, method):
-        logger.debug("Test!")
         rsp = super(MendeleySession, self).request(method, full_url,
                                                    data, headers, **kwargs)
         return rsp

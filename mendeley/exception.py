@@ -1,3 +1,5 @@
+import logging
+
 class MendeleyException(Exception):
     pass
 
@@ -15,7 +17,8 @@ class MendeleyApiException(MendeleyException):
 
     @property
     def message(self):
+        logging.debug(self.rsp.json())
         try:
-            return self.rsp.json()['message']
+            return self.rsp.json()
         except ValueError:
             return self.rsp.text
